@@ -33,12 +33,12 @@ class Cars {
 
   addCar = asyncHandler(async (req, res) => {
     const { brand, model } = req.body;
-
+    const userId = req.user.id;
     if (!brand || !model) {
       res.status(400);
       throw new Error('Provide all required fields!');
     }
-    const car = await carsService.add(req.body);
+    const car = await carsService.add(req.body, userId);
     if (!car) {
       res.status(400);
       throw new Error('Unable to save to DB :(');
@@ -51,7 +51,8 @@ class Cars {
   });
 
   getAll = asyncHandler(async (req, res) => {
-    const result = await carsService.getAll();
+    const id = req.user.id;
+    const result = await carsService.getAll(id);
     if (!result) {
       res.status(400);
       throw new Error('Unable to fetch cars :(');

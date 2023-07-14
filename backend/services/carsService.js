@@ -1,16 +1,16 @@
 const carsModel = require('../models/carsModel');
 
 class CarsService {
-  async getAll() {
-    const cars = carsModel.find({});
+  async getAll(id) {
+    const cars = carsModel.find({ owner: id });
     if (!cars) {
       return null;
     }
     return cars;
   }
 
-  async add(data) {
-    const car = await carsModel.create({ ...data });
+  async add(data, id) {
+    const car = await carsModel.create({ ...data, owner: id });
     if (!car) {
       return null;
     }
