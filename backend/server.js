@@ -9,13 +9,47 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('./middlewares/authMiddleware');
 const rolesModel = require('./models/rolesModel');
-
+const { engine } = require('express-handlebars');
+const sendEmail = require('./services/sendEmail');
 const configPath = path.join(__dirname, '..', 'config', '.env');
 require('dotenv').config({ path: configPath });
 const app = express();
 
+app.use(express.static('public'));
+
+// Set template engine
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
+app.set('views', 'backend/views');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.get('/', (req, res) => {
+  res.render('home');
+});
+
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
+app.get('/contact', (req, res) => {
+  res.render('contact');
+});
+
+app.post('/send', async (req, res) => {
+  try {
+    res.render('send', {
+      message: 'Contact sent success',
+      user: req.body.userName,
+      email: req.body.userEmail,
+    });
+    await sendEmail(req.body);
+    // res.send(req.body);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.use('/api/v1', require('./routes/carsRoutes'));
 
